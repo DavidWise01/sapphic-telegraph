@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Sapphic Telegraph</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600&family=Spectral:ital,wght@0,300;0,400;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sea:#170d20; --sea2:#1f1330; --sea3:#271838;
+    --lead:#9a98a6; --lead-dim:#5b5868; --line:rgba(154,152,166,.16);
+    --parch:#e9e2d2; --parch-dim:#b9b2a3;
+    --gold:#d9a441; --gold-dim:#a87f33; --verd:#73b3a3; --murex:#9a3d68;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--sea);color:var(--parch);
+    font-family:"Spectral",Georgia,serif;line-height:1.55;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(1000px 520px at 82% -10%,rgba(154,61,104,.16),transparent 60%),
+      radial-gradient(820px 640px at 5% 112%,rgba(115,179,163,.10),transparent 55%);
+    display:flex;justify-content:center}
+  .card{max-width:600px;width:100%;padding:32px 24px 50px}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--gold-dim)}
+  h1{font-family:"Cormorant Garamond",serif;font-weight:300;font-size:clamp(38px,10vw,58px);
+    margin:6px 0 0;line-height:.98;letter-spacing:-.5px}
+  .sub{font-style:italic;font-weight:300;color:var(--parch-dim);font-size:16px;margin:14px 0 0;max-width:48ch}
+  .sub b{color:var(--verd);font-style:normal;font-weight:400}
+
+  .lamp-row{display:flex;align-items:center;gap:18px;margin:26px 0 6px}
+  .lamp{width:54px;height:54px;border-radius:50%;flex:0 0 54px;
+    background:radial-gradient(circle at 38% 34%,#2a1d38,#140b1c);
+    border:1px solid var(--lead-dim);transition:none}
+  .lamp.on{background:radial-gradient(circle at 38% 34%,#ffe6a8,#d9a441);
+    box-shadow:0 0 26px 6px rgba(217,164,65,.6);border-color:var(--gold)}
+  .lampcap{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--lead-dim);
+    letter-spacing:.1em;line-height:1.5}
+
+  h2{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--gold-dim);margin:30px 0 10px;font-weight:500;border-top:1px solid var(--line);padding-top:18px}
+  label{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--lead-dim);letter-spacing:.08em}
+  input[type=text],textarea{width:100%;background:rgba(0,0,0,.22);border:1px solid var(--line);
+    border-radius:5px;color:var(--parch);font-family:"Spectral",serif;font-size:16px;
+    padding:11px 13px;margin-top:5px;resize:vertical}
+  input:focus,textarea:focus{outline:none;border-color:rgba(217,164,65,.5)}
+
+  .pattern{font-family:"IBM Plex Mono",monospace;font-size:20px;letter-spacing:1px;color:var(--gold);
+    background:rgba(217,164,65,.05);border:1px solid rgba(217,164,65,.16);border-radius:5px;
+    padding:12px 14px;margin-top:10px;min-height:46px;word-break:break-word;line-height:1.7}
+  .pattern .sep{color:var(--lead-dim)}
+  .pattern .lit{color:var(--parch);text-shadow:0 0 10px var(--gold)}
+
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center}
+  button{cursor:pointer;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(0,0,0,.18));
+    border:1px solid var(--line);border-radius:5px;color:var(--parch);
+    font-family:"IBM Plex Mono",monospace;font-size:12.5px;letter-spacing:.05em;padding:11px 16px;transition:.15s}
+  button:hover{border-color:rgba(217,164,65,.5);background:rgba(217,164,65,.06)}
+  button:active{transform:translateY(1px)}
+  button.primary{border-color:rgba(217,164,65,.5);color:var(--gold)}
+  button:disabled{opacity:.4;pointer-events:none}
+  .speed{display:flex;align-items:center;gap:8px;font-family:"IBM Plex Mono",monospace;
+    font-size:11px;color:var(--lead-dim);margin-left:auto}
+  input[type=range]{accent-color:var(--gold);width:96px}
+
+  .key{user-select:none;-webkit-user-select:none;touch-action:none;
+    width:100%;padding:26px;text-align:center;border-radius:7px;margin-top:8px;
+    background:linear-gradient(180deg,#2a1838,#1c1029);border:1px solid var(--lead-dim);
+    font-family:"Cormorant Garamond",serif;font-size:24px;color:var(--parch-dim);transition:.06s}
+  .key.down{background:linear-gradient(180deg,#3a2350,#241433);border-color:var(--gold);
+    color:var(--gold);transform:translateY(1px)}
+  .keyout{font-family:"IBM Plex Mono",monospace;font-size:16px;color:var(--gold);margin-top:8px;min-height:24px;letter-spacing:1px}
+  .keytext{font-family:"Cormorant Garamond",serif;font-size:22px;color:var(--parch);margin-top:4px;min-height:28px;letter-spacing:.5px}
+
+  .decoded{font-family:"Cormorant Garamond",serif;font-size:22px;color:var(--verd);
+    margin-top:10px;min-height:30px;letter-spacing:.5px}
+
+  details{margin-top:26px;border-top:1px solid var(--line);padding-top:14px}
+  summary{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--gold-dim);cursor:pointer}
+  .chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:6px 12px;margin-top:14px}
+  .chart div{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--parch-dim)}
+  .chart b{color:var(--gold);font-weight:500;display:inline-block;width:14px}
+  .chart .g{color:var(--gold)}
+
+  .note{margin-top:24px;border-top:1px solid var(--line);padding-top:15px;
+    font-family:"IBM Plex Mono",monospace;font-size:11px;line-height:1.85;color:var(--lead-dim)}
+  .note b{color:var(--gold-dim);font-weight:500}
+  @media(prefers-reduced-motion:reduce){.key{transition:none}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="eyebrow">a purple-paper instrument</div>
+  <h1>The Sapphic Telegraph</h1>
+  <p class="sub">The metre is a two-symbol alphabet — <b>long</b> and <b>short</b>, – and ‿. So is Morse: dash and dot. They are the same alphabet. This device speaks Morse in the metre's voice: short pluck for ‿, long pluck for –. Type to send; tap the key to send by hand; paste – ‿ to receive.</p>
+
+  <div class="lamp-row">
+    <div class="lamp" id="lamp"></div>
+    <div class="lampcap">the carrier.<br>long held = –, short = ‿<br>watch it, or listen.</div>
+  </div>
+
+  <h2>① Compose &amp; transmit</h2>
+  <label for="msg">your message</label>
+  <input type="text" id="msg" value="while you live shine" autocomplete="off">
+  <div class="pattern" id="pattern"></div>
+  <div class="row">
+    <button class="primary" id="send">▶ transmit</button>
+    <button id="stop" disabled>■ stop</button>
+    <div class="speed">tempo <input type="range" id="tempo" min="60" max="180" value="105"></div>
+  </div>
+
+  <h2>② The key — send by hand</h2>
+  <label>press &amp; hold · short = ‿ · long = – · pause to end a letter, longer pause for a word</label>
+  <div class="key" id="key">⌯ press &amp; hold ⌯</div>
+  <div class="keyout" id="keyout"></div>
+  <div class="keytext" id="keytext"></div>
+  <div class="row"><button id="keyclear">clear</button></div>
+
+  <h2>③ Receive — decode – ‿ back to words</h2>
+  <label>paste a pattern (– ‿ or - . ; space between letters, / between words)</label>
+  <textarea id="decin" rows="2">– ‿ ‿ / – ‿ ‿ / ‿</textarea>
+  <div class="row"><button id="decbtn">decode →</button></div>
+  <div class="decoded" id="decout"></div>
+
+  <details>
+    <summary>the long/short alphabet (Morse, in metre glyphs)</summary>
+    <div class="chart" id="chart"></div>
+  </details>
+
+  <div class="note">
+    <b>what this is.</b> a real, decodable communication device. the encoding is standard Morse — a genuine variable-length binary code — rendered in the metre's two durations and played on a plucked-string voice. long is held about twice as long as short, the Greek ratio, not Morse's 3:1.
+    <br><b>what it isn't.</b> a historical claim. Sappho had no telegraph; Morse is 1830s. the real thread is the <b>shared abstraction</b> — both systems carry meaning on a two-symbol alphabet of long against short. the metre and the telegraph are cousins through their code, not their century.
+  </div>
+</div>
+
+<script>
+(function(){
+  // ---- Morse tables ----
+  const M={A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",J:".---",
+    K:"-.-",L:".-..",M:"--",N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",U:"..-",
+    V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--..",
+    "0":"-----","1":".----","2":"..---","3":"...--","4":"....-","5":".....",
+    "6":"-....","7":"--...","8":"---..","9":"----.",".":".-.-.-",",":"--..--","?":"..--..","/":"-..-."};
+  const REV={}; for(const k in M) REV[M[k]]=k;
+
+  const norm = s => s.replace(/‿/g,".").replace(/[–—-]/g,"-"); // glyphs -> . / -
+  const glyph = s => s.replace(/\./g,"‿").replace(/-/g,"–");
+
+  function encode(text){
+    return text.toUpperCase().trim().split(/\s+/).map(word=>
+      word.split("").map(ch=>M[ch]||"").filter(Boolean).join(" ")
+    ).join(" / ");
+  }
+  function decode(pattern){
+    return norm(pattern).trim().split("/").map(word=>
+      word.trim().split(/\s+/).map(code=>REV[code]||"").join("")
+    ).join(" ").trim();
+  }
+
+  // ---- audio ----
+  let ctx=null, master=null, keyOsc=null, keyGain=null;
+  function init(){
+    if(ctx) return;
+    ctx=new (window.AudioContext||window.webkitAudioContext)();
+    master=ctx.createGain(); master.gain.value=0.8; master.connect(ctx.destination);
+    // sustained sidetone for the hand key
+    keyOsc=ctx.createOscillator(); keyOsc.type="triangle"; keyOsc.frequency.value=246.94; // ~B3
+    keyGain=ctx.createGain(); keyGain.gain.value=0;
+    keyOsc.connect(keyGain).connect(master); keyOsc.start();
+  }
+  function resume(){ if(ctx&&ctx.state==="suspended") ctx.resume(); }
+  // Karplus-Strong pluck (lyre voice) for machine transmit
+  function pluck(freq,t,dur,gain){
+    gain=gain||0.6; const rate=ctx.sampleRate;
+    const N=Math.max(2,Math.round(rate/freq)), len=Math.max(N+4,Math.floor(rate*dur));
+    const buf=ctx.createBuffer(1,len,rate), d=buf.getChannelData(0);
+    for(let i=0;i<N;i++) d[i]=Math.random()*2-1;
+    for(let i=N;i<len;i++) d[i]=0.9965*0.5*(d[i-N]+d[i-N+1]);
+    const src=ctx.createBufferSource(); src.buffer=buf;
+    const g=ctx.createGain(); g.gain.setValueAtTime(gain,t);
+    g.gain.exponentialRampToValueAtTime(0.0006,t+dur);
+    src.connect(g).connect(master); src.start(t); src.stop(t+dur+0.02);
+  }
+  const lamp=document.getElementById('lamp');
+  function lampOn(on){ lamp.classList.toggle('on',on); }
+
+  // ---- live pattern display ----
+  const msg=document.getElementById('msg'), patEl=document.getElementById('pattern');
+  function renderPattern(litIndex){
+    const code=encode(msg.value);
+    let html="", k=0;
+    for(const c of code){
+      if(c==="."||c==="-"){
+        const cls = (litIndex===k)?"lit":"";
+        html+=`<span class="${cls}">${c==="."?"‿":"–"}</span>`; k++;
+      } else if(c===" ") html+=`<span class="sep"> </span>`;
+      else if(c==="/") html+=`<span class="sep"> / </span>`;
+    }
+    patEl.innerHTML=html||"&nbsp;";
+    return code;
+  }
+  msg.addEventListener('input',()=>renderPattern(-1));
+
+  // ---- machine transmit ----
+  let stopFlag=false, timers=[];
+  const sendBtn=document.getElementById('send'), stopBtn=document.getElementById('stop');
+  function clearTimers(){ timers.forEach(clearTimeout); timers=[]; }
+  function transmit(){
+    init(); resume(); stopFlag=false;
+    const code=encode(msg.value);
+    const unit=60/ (+document.getElementById('tempo').value) ; // seconds per dot-ish
+    const t0=ctx.currentTime+0.06;
+    let off=0;            // seconds offset
+    let symIdx=0;         // index among . and - for highlight
+    sendBtn.disabled=true; stopBtn.disabled=false;
+    for(const c of code){
+      if(c==="."||c==="-"){
+        const dur=(c==="."?1:2)*unit;
+        pluck(196,t0+off,dur*1.05,0.62);
+        const onAt=off, myIdx=symIdx;
+        timers.push(setTimeout(()=>{lampOn(true);renderPattern(myIdx);}, onAt*1000));
+        timers.push(setTimeout(()=>lampOn(false),(onAt+dur)*1000));
+        off+=dur+unit;        // symbol + 1u gap
+        symIdx++;
+      } else if(c===" ") off+=2*unit;     // letter gap (total 3u)
+      else if(c==="/") off+=6*unit;       // word gap (total ~7u)
+    }
+    timers.push(setTimeout(()=>{ end(); }, (off+0.1)*1000));
+  }
+  function end(){ clearTimers(); lampOn(false); renderPattern(-1);
+    sendBtn.disabled=false; stopBtn.disabled=true; }
+  sendBtn.addEventListener('click',transmit);
+  stopBtn.addEventListener('click',()=>{ stopFlag=true; end(); });
+
+  // ---- the hand key ----
+  const keyEl=document.getElementById('key'), keyout=document.getElementById('keyout'),
+        keytext=document.getElementById('keytext');
+  let pressT=0, symbols="", flushTimer=null, decodedKey="";
+  const DOT_MAX=200, LETTER_GAP=650, WORD_GAP=1500;
+  function keyDown(e){ e.preventDefault(); init(); resume();
+    if(pressT) return;
+    pressT=performance.now(); keyEl.classList.add('down'); lampOn(true);
+    if(flushTimer){clearTimeout(flushTimer);flushTimer=null;}
+    keyGain.gain.cancelScheduledValues(ctx.currentTime);
+    keyGain.gain.setTargetAtTime(0.16, ctx.currentTime, 0.005);
+  }
+  function keyUp(e){ if(e)e.preventDefault(); if(!pressT) return;
+    const dur=performance.now()-pressT; pressT=0;
+    keyEl.classList.remove('down'); lampOn(false);
+    keyGain.gain.setTargetAtTime(0.0, ctx.currentTime, 0.02);
+    symbols += (dur<DOT_MAX?".":"-");
+    keyout.textContent=glyph(symbols);
+    flushTimer=setTimeout(flushLetter, LETTER_GAP);
+  }
+  function flushLetter(){
+    if(symbols){ decodedKey += (REV[symbols]||"□"); symbols=""; keyout.textContent=""; }
+    keytext.textContent=decodedKey;
+    flushTimer=setTimeout(()=>{ if(decodedKey && decodedKey.slice(-1)!==" "){decodedKey+=" ";keytext.textContent=decodedKey;} }, WORD_GAP-LETTER_GAP);
+  }
+  keyEl.addEventListener('mousedown',keyDown);
+  window.addEventListener('mouseup',keyUp);
+  keyEl.addEventListener('touchstart',keyDown,{passive:false});
+  keyEl.addEventListener('touchend',keyUp,{passive:false});
+  document.getElementById('keyclear').addEventListener('click',()=>{
+    symbols="";decodedKey="";keyout.textContent="";keytext.textContent="";
+    if(flushTimer){clearTimeout(flushTimer);flushTimer=null;}
+  });
+
+  // ---- decode panel ----
+  document.getElementById('decbtn').addEventListener('click',()=>{
+    document.getElementById('decout').textContent = decode(document.getElementById('decin').value) || "—";
+  });
+
+  // ---- chart ----
+  const chart=document.getElementById('chart');
+  chart.innerHTML=Object.keys(M).map(k=>`<div><b>${k}</b> <span class="g">${glyph(M[k])}</span></div>`).join("");
+
+  renderPattern(-1);
+})();
+</script>
+</body>
+</html>
